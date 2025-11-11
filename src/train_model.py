@@ -14,11 +14,12 @@ from src.data_loader import load_data
 import dagshub
 import mlflow
 
-# Initialize DagsHub connection
+# Initialize DagsHub connection securely using environment variables
 dagshub.init(
-    repo_owner='MeghaRathi-ee',
-    repo_name='house_price_predict',
-    mlflow=True
+    repo_owner=os.getenv("DAGSHUB_USER"),
+    repo_name="house_price_predict",
+    mlflow=True,
+    token=os.getenv("DAGSHUB_TOKEN")
 )
 
 
