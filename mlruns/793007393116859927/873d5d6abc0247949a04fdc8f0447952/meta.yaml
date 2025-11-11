@@ -1,0 +1,14 @@
+artifact_uri: file:///C:/Users/Admin/Desktop/mlops_final_final/House_price_predict/mlruns/793007393116859927/873d5d6abc0247949a04fdc8f0447952/artifacts
+end_time: 1762864913950
+entry_point_name: ''
+experiment_id: '793007393116859927'
+lifecycle_stage: active
+run_id: 873d5d6abc0247949a04fdc8f0447952
+run_name: dazzling-robin-49
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1762864913807
+status: 4
+tags: []
+user_id: Admin

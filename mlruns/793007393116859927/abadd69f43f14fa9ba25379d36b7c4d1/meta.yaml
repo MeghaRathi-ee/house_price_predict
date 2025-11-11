@@ -1,0 +1,14 @@
+artifact_uri: file:///C:/Users/Admin/Desktop/mlops_final_final/House_price_predict/mlruns/793007393116859927/abadd69f43f14fa9ba25379d36b7c4d1/artifacts
+end_time: 1762865032444
+entry_point_name: ''
+experiment_id: '793007393116859927'
+lifecycle_stage: active
+run_id: abadd69f43f14fa9ba25379d36b7c4d1
+run_name: resilient-ant-126
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1762865024483
+status: 4
+tags: []
+user_id: Admin
