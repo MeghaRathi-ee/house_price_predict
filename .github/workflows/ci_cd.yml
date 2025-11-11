@@ -49,10 +49,20 @@ jobs:
           dvc pull
           echo "✅ Dataset pulled successfully"
 
-      # Run training pipeline
+      # Set up DagsHub credentials for MLflow
+      - name: Set up DagsHub credentials
+        run: echo "🔑 Setting up DagsHub credentials..."
+        env:
+          DAGSHUB_USER: MeghaRathi-ee
+          DAGSHUB_TOKEN: ${{ secrets.DAGSHUB_TOKEN }}
+
+      # Run Training Pipeline with MLflow logging
       - name: Run Training Pipeline
         run: |
           python -m src.train_model
+        env:
+          DAGSHUB_USER: MeghaRathi-ee
+          DAGSHUB_TOKEN: ${{ secrets.DAGSHUB_TOKEN }}
 
       # Build Docker Image
       - name: Build Docker Image
