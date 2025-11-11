@@ -8,11 +8,11 @@ venv/
 .env/
 *.egg-info/
 
-# DVC
-# Ignore DVC data tracking files but keep core config
+# DVC - allow config and tracking files
 !.dvc/
 !.dvc/config
 !.dvcignore
+
 
 
 # MLflow
