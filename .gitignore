@@ -3,18 +3,20 @@ __pycache__/
 *.pyc
 *.pyo
 *.pyd
-.env
 venv/
+.env
 .env/
-*.egg-info/
-
-# MLflow
-mlruns/
 
 # VS Code
 .vscode/
 
-# Data and model artifacts
-data/
+# MLflow
+mlruns/
+
+# DVC and data
 models/
+data/
 !data/*.dvc
+!.dvc/
+!.dvc/config
+!.dvcignore
