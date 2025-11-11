@@ -8,13 +8,6 @@ venv/
 .env/
 *.egg-info/
 
-# DVC - allow config and tracking files
-!.dvc/
-!.dvc/config
-!.dvcignore
-
-
-
 # MLflow
 mlruns/
 
