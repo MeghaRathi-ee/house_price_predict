@@ -27,15 +27,42 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      # Configure DVC Remote (DagsHub)
+            - name: Configure DVC Remote
+        env:
+          DAGSHUB_USER: ${{ secrets.DAGSHUB_USER }}
+          DAGSHUB_TOKEN: ${{ secrets.DAGSHUB_TOKEN }}
+        run: |
+          # add the DagsHub remote (create remote entry)
+          dvc remote add origin https://dagshub.com/MeghaRathi-ee/house_price_predict.dvc || true
+
+          # optionally set it as default
+          dvc remote default origin || true
+
+          # configure credentials locally for this runner
+          dvc remote modify origin --local auth basic
+          dvc remote modify origin --local user $DAGSHUB_USER
+          dvc remote modify origin --local password $DAGSHUB_TOKEN
+
+          # debug: show remote list
+          dvc remote list
+
+
       - name: Configure DVC Remote
         env:
           DAGSHUB_USER: ${{ secrets.DAGSHUB_USER }}
           DAGSHUB_TOKEN: ${{ secrets.DAGSHUB_TOKEN }}
         run: |
+          dvc remote add origin https://dagshub.com/MeghaRathi-ee/house_price_predict.dvc || true
+          dvc remote default origin || true
           dvc remote modify origin --local auth basic
           dvc remote modify origin --local user $DAGSHUB_USER
           dvc remote modify origin --local password $DAGSHUB_TOKEN
+          dvc remote list
+
+      - name: Pull Dataset from DVC
+        run: |
+          dvc pull
+
 
       # Pull Dataset from DVC
       - name: Pull Dataset from DVC
