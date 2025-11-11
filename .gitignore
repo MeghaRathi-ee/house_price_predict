@@ -10,7 +10,6 @@ venv/
 
 # DVC
 # Ignore DVC data tracking files but keep core config
-*.dvc
 !.dvc/
 !.dvc/config
 !.dvcignore
