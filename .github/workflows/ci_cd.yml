@@ -44,10 +44,18 @@ jobs:
 
       # Pull Dataset from DVC
       - name: Pull Dataset from DVC
+        env:
+          DAGSHUB_USER: ${{ secrets.DAGSHUB_USER }}
+          DAGSHUB_TOKEN: ${{ secrets.DAGSHUB_TOKEN }}
         run: |
           echo "⬇️ Pulling dataset from DagsHub remote..."
-          dvc pull
+          dvc remote modify origin --local auth basic
+          dvc remote modify origin --local user $DAGSHUB_USER
+          dvc remote modify origin --local password $DAGSHUB_TOKEN
+          dvc pull -v
           echo "✅ Dataset pulled successfully"
+          ls -R data || echo "⚠️ Data folder missing!"
+
 
       # Set up DagsHub credentials for MLflow
       - name: Set up DagsHub credentials
