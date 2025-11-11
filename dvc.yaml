@@ -1,0 +1,8 @@
+stages:
+  train_model:
+    cmd: python -m src.train_model
+    deps:
+    - data/houseprices.csv
+    - src/train_model.py
+    outs:
+    - models/model.pkl
