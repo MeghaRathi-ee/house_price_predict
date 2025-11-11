@@ -17,3 +17,4 @@ mlruns/
 # Data and model artifacts
 data/
 models/
+!data/*.dvc
