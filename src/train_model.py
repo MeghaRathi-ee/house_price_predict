@@ -14,12 +14,15 @@ from src.data_loader import load_data
 import dagshub
 import mlflow
 
-# Initialize DagsHub connection securely using environment variables
+# Authenticate using environment variables (no token= param)
+os.environ["MLFLOW_TRACKING_USERNAME"] = os.getenv("DAGSHUB_USER")
+os.environ["MLFLOW_TRACKING_PASSWORD"] = os.getenv("DAGSHUB_TOKEN")
+os.environ["MLFLOW_TRACKING_URI"] = "https://dagshub.com/MeghaRathi-ee/house_price_predict.mlflow"
+
 dagshub.init(
-    repo_owner=os.getenv("DAGSHUB_USER"),
+    repo_owner="MeghaRathi-ee",
     repo_name="house_price_predict",
-    mlflow=True,
-    token=os.getenv("DAGSHUB_TOKEN")
+    mlflow=True
 )
 
 
