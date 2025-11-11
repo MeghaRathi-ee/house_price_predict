@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.env
+venv/
+.env/
+*.egg-info/
+
+# DVC
+*.dvc
+.dvc/
+
+# MLflow
+mlruns/
+
+# VS Code
+.vscode/
+
+# Data and model artifacts
+data/
+models/
