@@ -11,6 +11,16 @@ from sklearn.pipeline import Pipeline
 from sklearn import linear_model
 from sklearn.metrics import mean_squared_error, r2_score
 from src.data_loader import load_data
+import dagshub
+import mlflow
+
+# Initialize DagsHub connection
+dagshub.init(
+    repo_owner='MeghaRathi-ee',
+    repo_name='house_price_predict',
+    mlflow=True
+)
+
 
 def train():
     mlflow.set_experiment("House_Price_Predict")
@@ -58,12 +68,16 @@ def train():
         # MLflow logging
         mlflow.log_metric("RMSE", rmse)
         mlflow.log_metric("R2", r2)
-        mlflow.sklearn.log_model(model, "model")
+        mlflow.log_param("model_type", "LinearRegression")
 
         # Save model
         os.makedirs("models", exist_ok=True)
         joblib.dump(model, "models/model.pkl")
-        print("✅ Model saved at models/model.pkl")
+
+        # Log model artifact to MLflow/DagsHub
+        mlflow.log_artifact("models/model.pkl")
+        print("✅ Model saved and logged successfully at models/model.pkl")
+        
 
 if __name__ == "__main__":
     train()
