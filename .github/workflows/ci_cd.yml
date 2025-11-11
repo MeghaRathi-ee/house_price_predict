@@ -15,7 +15,7 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
 
-      # Set up Python environment
+      # Set up Python
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
@@ -27,50 +27,30 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-            - name: Configure DVC Remote
-        env:
-          DAGSHUB_USER: ${{ secrets.DAGSHUB_USER }}
-          DAGSHUB_TOKEN: ${{ secrets.DAGSHUB_TOKEN }}
-        run: |
-          # add the DagsHub remote (create remote entry)
-          dvc remote add origin https://dagshub.com/MeghaRathi-ee/house_price_predict.dvc || true
-
-          # optionally set it as default
-          dvc remote default origin || true
-
-          # configure credentials locally for this runner
-          dvc remote modify origin --local auth basic
-          dvc remote modify origin --local user $DAGSHUB_USER
-          dvc remote modify origin --local password $DAGSHUB_TOKEN
-
-          # debug: show remote list
-          dvc remote list
-
-
+      # Configure DVC Remote (DagsHub)
       - name: Configure DVC Remote
         env:
           DAGSHUB_USER: ${{ secrets.DAGSHUB_USER }}
           DAGSHUB_TOKEN: ${{ secrets.DAGSHUB_TOKEN }}
         run: |
+          echo "🔧 Setting up DVC remote for DagsHub..."
           dvc remote add origin https://dagshub.com/MeghaRathi-ee/house_price_predict.dvc || true
           dvc remote default origin || true
           dvc remote modify origin --local auth basic
           dvc remote modify origin --local user $DAGSHUB_USER
           dvc remote modify origin --local password $DAGSHUB_TOKEN
+          echo "✅ Remote configured successfully"
           dvc remote list
-
-      - name: Pull Dataset from DVC
-        run: |
-          dvc pull
-
 
       # Pull Dataset from DVC
       - name: Pull Dataset from DVC
         run: |
+          echo "⬇️ Pulling dataset from DagsHub remote..."
           dvc pull
+          echo "✅ Dataset pulled successfully"
 
-      # Run Training (with MLflow Tracking)
-      - name: Train Model
+      # Run training pipeline
+      - name: Run Training Pipeline
         run: |
           python -m src.train_model
 
