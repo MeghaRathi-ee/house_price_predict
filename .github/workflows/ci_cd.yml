@@ -42,15 +42,22 @@ jobs:
           echo "✅ Remote configured successfully"
           dvc remote list
 
-      # ✅ Pull Dataset from DVC (with fallback)
+      # ✅ Pull Dataset from DVC (with fallback and debug)
       - name: Pull Dataset from DVC (Full Auth)
         env:
           DAGSHUB_USER: ${{ secrets.DAGSHUB_USER }}
           DAGSHUB_TOKEN: ${{ secrets.DAGSHUB_TOKEN }}
         run: |
-          echo "⬇️ Attempting to pull dataset from DagsHub using DVC..."
+          echo "🔧 Setting up DVC remote and pulling data..."
+          dvc remote remove origin || true
+          dvc remote add -d origin https://dagshub.com/MeghaRathi-ee/house_price_predict.dvc
+          dvc remote modify origin auth basic
+          dvc remote modify origin user $DAGSHUB_USER
+          dvc remote modify origin password $DAGSHUB_TOKEN
+
+          echo "⬇️ Attempting to pull dataset..."
           if ! dvc pull -v; then
-            echo "⚠️ DVC pull failed — falling back to direct download."
+            echo "⚠️ DVC pull failed — using fallback download instead."
             mkdir -p data
             curl -L -o data/houseprices.csv https://dagshub.com/MeghaRathi-ee/house_price_predict/raw/main/data/houseprices.csv
             echo "✅ Dataset downloaded via fallback URL."
@@ -60,6 +67,22 @@ jobs:
 
           echo "📁 Verifying data directory contents:"
           ls -R data || echo "⚠️ Data folder missing!"
+
+          echo "📄 Verifying exact file path:"
+          if [ -f "data/houseprices.csv" ]; then
+            echo "✅ Found data/houseprices.csv ✅"
+          else
+            echo "❌ data/houseprices.csv not found, forcing fallback download..."
+            mkdir -p data
+            curl -L -o data/houseprices.csv https://dagshub.com/MeghaRathi-ee/house_price_predict/raw/main/data/houseprices.csv
+            echo "✅ Data fetched manually."
+          fi
+
+      - name: Debug - Show Folder Structure
+        run: |
+          echo "📂 Printing project folder structure"
+          pwd
+          ls -R
 
       # ✅ Set up DagsHub credentials for MLflow
       - name: Set up DagsHub credentials
