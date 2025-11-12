@@ -11,66 +11,64 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout the repository
+      # ✅ Checkout the repository
       - name: Checkout Repository
         uses: actions/checkout@v3
 
-      # Set up Python
+      # ✅ Set up Python
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: "3.10"
 
-      # Install dependencies
+      # ✅ Install dependencies
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      # Configure DVC Remote (DagsHub)
+      # ✅ Configure DVC Remote (DagsHub)
       - name: Configure DVC Remote
         env:
           DAGSHUB_USER: ${{ secrets.DAGSHUB_USER }}
           DAGSHUB_TOKEN: ${{ secrets.DAGSHUB_TOKEN }}
         run: |
           echo "🔧 Setting up DVC remote for DagsHub..."
-          dvc remote add origin https://dagshub.com/MeghaRathi-ee/house_price_predict.dvc || true
-          dvc remote default origin || true
-          dvc remote modify origin --local auth basic
-          dvc remote modify origin --local user $DAGSHUB_USER
-          dvc remote modify origin --local password $DAGSHUB_TOKEN
-          echo "✅ Remote configured successfully"
-          dvc remote list
-
-      # Pull Dataset from DVC
-      - name: Pull Dataset from DVC (Full Auth)
-        env:
-          DAGSHUB_USER: ${{ secrets.DAGSHUB_USER }}
-          DAGSHUB_TOKEN: ${{ secrets.DAGSHUB_TOKEN }}
-        run: |
-          echo "🔧 Setting up DVC remote and pulling data..."
           dvc remote remove origin || true
           dvc remote add -d origin https://dagshub.com/MeghaRathi-ee/house_price_predict.dvc
           dvc remote modify origin auth basic
           dvc remote modify origin user $DAGSHUB_USER
           dvc remote modify origin password $DAGSHUB_TOKEN
+          echo "✅ Remote configured successfully"
+          dvc remote list
 
-          echo "⬇️ Pulling dataset..."
-          dvc pull -v || { echo "❌ DVC pull failed"; exit 1; }
+      # ✅ Pull Dataset from DVC (with fallback)
+      - name: Pull Dataset from DVC (Full Auth)
+        env:
+          DAGSHUB_USER: ${{ secrets.DAGSHUB_USER }}
+          DAGSHUB_TOKEN: ${{ secrets.DAGSHUB_TOKEN }}
+        run: |
+          echo "⬇️ Attempting to pull dataset from DagsHub using DVC..."
+          if ! dvc pull -v; then
+            echo "⚠️ DVC pull failed — falling back to direct download."
+            mkdir -p data
+            curl -L -o data/houseprices.csv https://dagshub.com/MeghaRathi-ee/house_price_predict/raw/main/data/houseprices.csv
+            echo "✅ Dataset downloaded via fallback URL."
+          else
+            echo "✅ Dataset pulled successfully using DVC."
+          fi
 
-          echo "✅ Dataset pulled successfully!"
+          echo "📁 Verifying data directory contents:"
           ls -R data || echo "⚠️ Data folder missing!"
 
-
-
-      # Set up DagsHub credentials for MLflow
+      # ✅ Set up DagsHub credentials for MLflow
       - name: Set up DagsHub credentials
         run: echo "🔑 Setting up DagsHub credentials..."
         env:
           DAGSHUB_USER: MeghaRathi-ee
           DAGSHUB_TOKEN: ${{ secrets.DAGSHUB_TOKEN }}
 
-      # Run Training Pipeline with MLflow logging
+      # ✅ Run Training Pipeline with MLflow logging
       - name: Run Training Pipeline
         run: |
           python -m src.train_model
@@ -78,19 +76,19 @@ jobs:
           DAGSHUB_USER: MeghaRathi-ee
           DAGSHUB_TOKEN: ${{ secrets.DAGSHUB_TOKEN }}
 
-      # Build Docker Image
+      # ✅ Build Docker Image
       - name: Build Docker Image
         run: |
           docker build -t house_price_app .
 
-      # Log in to Docker Hub
+      # ✅ Log in to Docker Hub
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      # Push Docker Image to Docker Hub
+      # ✅ Push Docker Image to Docker Hub
       - name: Push Docker Image
         run: |
           docker tag house_price_app ${{ secrets.DOCKER_USERNAME }}/house_price_app:latest
