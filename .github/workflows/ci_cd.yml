@@ -43,21 +43,24 @@ jobs:
           dvc remote list
 
       # Pull Dataset from DVC
-      - name: Pull Dataset from DVC (with Auth)
+      - name: Pull Dataset from DVC (Full Auth)
         env:
           DAGSHUB_USER: ${{ secrets.DAGSHUB_USER }}
           DAGSHUB_TOKEN: ${{ secrets.DAGSHUB_TOKEN }}
         run: |
-          echo "🔐 Authenticating DVC remote..."
-          dvc remote modify origin --local auth basic
-          dvc remote modify origin --local user $DAGSHUB_USER
-          dvc remote modify origin --local password $DAGSHUB_TOKEN
+          echo "🔧 Setting up DVC remote and pulling data..."
+          dvc remote remove origin || true
+          dvc remote add -d origin https://dagshub.com/MeghaRathi-ee/house_price_predict.dvc
+          dvc remote modify origin auth basic
+          dvc remote modify origin user $DAGSHUB_USER
+          dvc remote modify origin password $DAGSHUB_TOKEN
 
-          echo "⬇️ Pulling dataset from DagsHub remote..."
-          dvc pull -v || { echo "❌ DVC Pull failed"; exit 1; }
+          echo "⬇️ Pulling dataset..."
+          dvc pull -v || { echo "❌ DVC pull failed"; exit 1; }
 
-          echo "✅ Dataset pulled successfully"
+          echo "✅ Dataset pulled successfully!"
           ls -R data || echo "⚠️ Data folder missing!"
+
 
 
       # Set up DagsHub credentials for MLflow
