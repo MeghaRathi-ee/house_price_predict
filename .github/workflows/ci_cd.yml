@@ -115,5 +115,8 @@ jobs:
       # ✅ Push Docker Image to Docker Hub
       - name: Push Docker Image
         run: |
-          docker tag house_price_app ${{ secrets.DOCKER_USERNAME }}/house_price_app:latest
+          echo "🐳 Tagging and pushing Docker image..."
+          docker tag library/house_price_app:latest ${{ secrets.DOCKER_USERNAME }}/house_price_app:latest || \
+          docker tag house_price_app:latest ${{ secrets.DOCKER_USERNAME }}/house_price_app:latest
+
           docker push ${{ secrets.DOCKER_USERNAME }}/house_price_app:latest
