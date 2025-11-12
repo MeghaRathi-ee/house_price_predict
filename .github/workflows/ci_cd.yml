@@ -43,16 +43,19 @@ jobs:
           dvc remote list
 
       # Pull Dataset from DVC
-      - name: Pull Dataset from DVC
+      - name: Pull Dataset from DVC (with Auth)
         env:
           DAGSHUB_USER: ${{ secrets.DAGSHUB_USER }}
           DAGSHUB_TOKEN: ${{ secrets.DAGSHUB_TOKEN }}
         run: |
-          echo "⬇️ Pulling dataset from DagsHub remote..."
+          echo "🔐 Authenticating DVC remote..."
           dvc remote modify origin --local auth basic
           dvc remote modify origin --local user $DAGSHUB_USER
           dvc remote modify origin --local password $DAGSHUB_TOKEN
-          dvc pull -v
+
+          echo "⬇️ Pulling dataset from DagsHub remote..."
+          dvc pull -v || { echo "❌ DVC Pull failed"; exit 1; }
+
           echo "✅ Dataset pulled successfully"
           ls -R data || echo "⚠️ Data folder missing!"
 
